@@ -10,11 +10,11 @@ The application will provide location-specific current weather data, a 4-day for
 
 The database schema will include a table for users (first_name, last_name, email, password, home_location, daily_email), and a table for fav_locations (user_id, location). For security purposes, I plan to use bcrypt hashing to store passwords. You can see the schema below.
 
-![data model chart](images/datamodel)
+![data model chart](images/datamodel.png)
 
 In terms of functionality, I will allow users to sign up, log in, search for locations, favorite locations that they would like to see on their personalized home-page, edit their profile, and browse the climate blog. 
 User flow is the path taken by a prototypical user on a website or app to complete a task. That being said, the user flow can be seen on the user flow chart below:
 
-![user flow chart](images/userflow)
+![user flow chart](images/userflow.png)
 
 The application will start on the homepage. For non-registered users, the homepage will feature only the search bar. This allows them to search and get weather data for a specific location. Unregistered users are also allowed to look through the blog about climate and ecological issues our society is facing. From the homepage, users will have links to sign up or log in. Once logged in, the user’s home page will feature the search bar, their home location set at the time they registered, and any favorite locations. When a logged in user searches for a location, they are able to favorite that location so it shows up on their homepage. Logged in users are also able to visit their profile and update (or delete) it.
