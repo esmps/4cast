@@ -1,0 +1,53 @@
+body{
+    background-color:white;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    color:rgb(71, 100, 130);
+    font-family: 'Bodoni Moda', serif;
+}
+
+/* Navbar styling */
+.nav.navbar-nav.navbar-right li a {
+    font-weight: bold;
+    color: rgb(71, 100, 130);
+    text-decoration: none !important;
+    padding: 0 20px;
+}
+.nav.navbar-nav.navbar-right li:hover a:hover {
+    color: rgb(129, 162, 196);
+}
+#app-name{
+    color: rgb(71, 100, 130); 
+    padding-left: 20px; 
+    font-size: 25px;
+    font-weight: bold;
+}
+
+/* Search bar styling */
+#search-container{
+    margin: 100px auto;
+}
+#search{
+    color: rgb(71, 100, 130);
+    border-color: rgb(71, 100, 130);
+    box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
+    height: 50px;
+}
+.form-control:focus {
+    outline: 0 !important;
+    border-color: initial;
+}
+.col-9, .col-1{
+    padding: 0px;
+}
+
+/* Footer styling */
+footer{
+    height: 50px;
+    text-align: center;
+    padding: 10px;
+    margin: auto auto 0 auto;
+    width: 100vw;
+    background-color: whitesmoke;
+}
