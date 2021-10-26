@@ -10,4 +10,4 @@ News API: https://newsapi.org/
 Email API: https://www.twilio.com/sendgrid/email-api
 
 ### Schema
-![data model chart](images/datamodel.png)
+![data model chart](static/flowcharts/datamodel.png)
