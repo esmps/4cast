@@ -29,6 +29,7 @@ ptyprocess==0.6.0
 pycparser==2.19
 Pygments==2.2.0
 python-dateutil==2.7.3
+python-dotenv==0.19.1
 requests==2.26.0
 simplegeneric==0.8.1
 six==1.11.0
