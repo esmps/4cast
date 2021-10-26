@@ -27,8 +27,11 @@ class User(db.Model):
 
     locations = db.relationship('Location')
 
+    def full_name(self):
+        return self.first_name + " " + self.last_name
+
     @classmethod
-    def signup(cls, username, email, password, image_url):
+    def signup(cls, first_name, last_name, email, password, home_location, daily_emails):
         """Sign up user.
         Hashes password and adds user to system.
         """
@@ -36,16 +39,19 @@ class User(db.Model):
         hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
 
         user = User(
-            username=username,
-            email=email,
-            password=hashed_pwd
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                password=hashed_pwd,
+                home_location=home_location,
+                daily_emails=daily_emails
         )
 
         db.session.add(user)
         return user
 
     @classmethod
-    def authenticate(cls, username, password):
+    def authenticate(cls, email, password):
         """Find user with `username` and `password`.
         This is a class method (call it on the class, not an individual user.)
         It searches for a user whose password hash matches this password
@@ -53,7 +59,7 @@ class User(db.Model):
         If can't find matching user (or if password is wrong), returns False.
         """
 
-        user = cls.query.filter_by(username=username).first()
+        user = cls.query.filter_by(email=email).first()
 
         if user:
             is_auth = bcrypt.check_password_hash(user.password, password)
@@ -61,6 +67,7 @@ class User(db.Model):
                 return user
 
         return False
+
 
 class Location(db.Model):
     """ User's favorited locations """
@@ -72,3 +79,9 @@ class Location(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), nullable=False)
 
     location = db.Column(db.Text, nullable=False)
+
+def connect_db(app):
+    """ Connect this database to provided Flask app """
+
+    db.app = app
+    db.init_app(app)
