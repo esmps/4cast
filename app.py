@@ -41,7 +41,7 @@ def verify_user_logged_in(function):
 @app.errorhandler(404)
 def page_not_found(e):
     """ Custom 404 page """
-    return render_template('404.html'), 404
+    return render_template('other/404.html'), 404
 
 @app.before_request
 def add_user_to_g():
@@ -130,7 +130,8 @@ def logout():
 @verify_user_logged_in
 @app.route('/profile')
 def view_profile():
-    return 
+    return render_template('users/profile.html')
+
 @app.route('/profile/edit', methods=["GET", "POST"])
 def edit_profile():
     return
@@ -159,4 +160,6 @@ def homepage():
     if g.user:
         user = User.query.get_or_404(g.user.id)
         locations = user.locations
-    return render_template('users/homepage.html', locations=locations)
+        return render_template('users/homepage.html', locations=locations)
+    else:
+        return render_template('users/homepage.html')

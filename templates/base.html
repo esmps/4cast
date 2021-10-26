@@ -20,7 +20,7 @@
         <div class="container-fluid">
             <div class="navbar-header">
             <a href="/" class="navbar-brand">
-            <img src="/static/images/nav-logo.png" alt="logo" style="height: 50px; padding: 2px;">
+            <img src="/static/images/nav-logo.png" alt="logo" style="height: 60px; padding: 2px;">
             </a>
           </div>
           <ul class="nav navbar-nav navbar-right" >
@@ -33,7 +33,7 @@
             </li>
             {% else %}
             <li class="nav-link">
-                <a href="">{{g.user.full_name()}}</a>
+                <a href="{{ url_for('view_profile') }}">{{g.user.full_name()}}</a>
             </li>
             <li class="nav-link">
                 <a href="{{ url_for('logout') }}">Log out</a>
