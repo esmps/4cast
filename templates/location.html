@@ -20,7 +20,7 @@
     <div class="card">
       <div class="card-header container bg-{{response.current.condition.code}}">
         <div class="row justify-content-between" data-bs-toggle="collapse" href="#collapseOne" style="cursor: pointer;">
-            <div class="col-8">
+            <div class="col">
                 <p class="loc-name-title">{{ response.location.name }}, {{ response.location.region }}</p>
                 <i>{{ response.current.condition.text }}</i>
             </div>
@@ -32,17 +32,26 @@
       </div>
       <div id="collapseOne" class="collapse show" data-bs-parent="#accordion">
         <div class="card-body container temp-info">
-            <div class="row text-center">
+            <div class="row text-center" id="hourly-weather">
                 {% for hour in hour_data %}
-                <div class="col">
-                    <p>{{hour.format_hour}} {% if hour.hour >= 0 and hour.hour < 12 %}AM {% else %} PM {% endif %}</p>
+                <div class="col hourly-col">
+                    <p>{{hour.format_hour}}{% if hour.hour >= 0 and hour.hour < 12 %}<small>AM</small>{% else %}<small>PM</small>{% endif %}</p>
                     <img src="{{hour.temp_icon}}" style="height: 35px;">
                     <p><b>{{hour.curr_temp}}˚F</b></p>
                 </div>
                 {% endfor %}
             </div>
-            <div class="row">
-                hello
+            <div class="row" id="weather-details">
+                <ul class="col">
+                    {% for day_weather in four_day_data %}
+                        <li style="list-style-type: none;">
+                            <p>{{day_weather.day}} <img src="{{day_weather.temp_icon}}" style="height: 35px;"> {{day_weather.high_temp}}˚F | {{day_weather.low_temp}}˚F</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="col">
+                    
+                </div>
             </div>
         </div>
       </div>
