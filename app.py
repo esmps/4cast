@@ -230,12 +230,12 @@ def get_weather():
     if not search:
         search = "San Francisco, CA"
         flash("Please input a location", "danger")
-        return redirect('/weather?q=San Francisco, CA')
+        return redirect('/')
     if search:
         response = requests.get(f'{WEATHER_BASE_URL}{FORECAST_WEATHER}?key={WEATHER_API_KEY}&q={search}&days=5&aqi=no&alerts=no')
         if "No matching location found." in response.text:
             flash("No matching location, please try again!", "danger")
-            return redirect('/weather?q=San Francisco, CA')
+            return redirect('/')
         hour_data = json.loads(get_hourly_data(response.text))
         four_day_data = json.loads(get_four_day_forecast(response.text))
         print(four_day_data)
