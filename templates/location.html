@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid justify-content-center" id="search-container">
+    <form class="container py-2 justify-content-center" action="{{ url_for('get_weather')}}">
+        <div class="input-group rounded" id="search">
+            <input name="q" type="search" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+            <button class="input-group-text" id="search-addon" style="background-color: white;">
+              <i class="far fa-compass" style="color:rgb(71, 100, 130); font-size: 30px"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+
+<!-- ACCORDIAN STYLE -->
+<div id="accordion" class="container noselect">
+
+    <div class="card">
+      <div class="card-header container bg-{{response.current.condition.code}}">
+        <div class="row justify-content-between" data-bs-toggle="collapse" href="#collapseOne" style="cursor: pointer;">
+            <div class="col-8">
+                <p class="loc-name-title">{{ response.location.name }}, {{ response.location.region }}</p>
+                <i>{{ response.current.condition.text }}</i>
+            </div>
+            <div class="col-4 text-end">
+                <p class="curr-temp">{{ response.current.temp_f}}˚F</p>
+                <small><b>H:</b> {{response.forecast.forecastday[0].day.maxtemp_f}}˚F | <b>L:</b> {{response.forecast.forecastday[0].day.mintemp_f}}˚F</small>
+            </div>
+        </div>
+      </div>
+      <div id="collapseOne" class="collapse show" data-bs-parent="#accordion">
+        <div class="card-body container temp-info">
+            <div class="row text-center">
+                {% for hour in hour_data %}
+                <div class="col">
+                    <p>{{hour.format_hour}} {% if hour.hour >= 0 and hour.hour < 12 %}AM {% else %} PM {% endif %}</p>
+                    <img src="{{hour.temp_icon}}" style="height: 35px;">
+                    <p><b>{{hour.curr_temp}}˚F</b></p>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="row">
+                hello
+            </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>
+
+
+{% endblock %}

@@ -6,9 +6,9 @@
             <img src="/static/images/logo.png" alt="clouds over sun" style="width: 40%; padding: 15px">
         </div>
     {% endif %}
-    <form class="container py-2 justify-content-center">
+    <form class="container py-2 justify-content-center" action="{{ url_for('get_weather')}}">
         <div class="input-group rounded" id="search">
-            <input type="search" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+            <input name="q" type="search" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
             <button class="input-group-text" id="search-addon" style="background-color: white;">
               <i class="far fa-compass" style="color:rgb(71, 100, 130); font-size: 30px"></i>
             </button>
@@ -16,10 +16,27 @@
     </form>
 </div>
 
-{% if not g.user %}
-<div class="container-fluid justify-content-center">
-    
+<!-- IF USER IS LOGGED IN, SHOW FAVORITED LOCATIONS -->
+{% if g.user %}
+<div id="accordion" class="container">
+    {% for location in locations %}
+    <div class="card">
+      <div class="card-header">
+        <a class="btn" data-bs-toggle="collapse" href="#collapse-{{location.id}}">
+          {{ location.location }}
+        </a>
+      </div>
+      <div id="collapse-{{location.id}}" class="collapse" data-bs-parent="#accordion">
+        <div class="card-body">
+          Data here for {{location.location}}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
 </div>
 
+
 {% endif %}
+
+
 {% endblock %}

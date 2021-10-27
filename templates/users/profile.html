@@ -5,11 +5,11 @@
     <div class="text-center">
         <h1>Profile</h1>
         <hr>
-        <h3>{{g.user.full_name()}}</h3>
-        <p><b>Email: </b>{{g.user.email}}</p>
-        <p><b>Home Location: </b>{{g.user.home_location}}</p>
+        <h3>{{user.full_name()}}</h3>
+        <p><b>Email: </b>{{user.email}}</p>
+        <p><b>Home Location: </b>{{user.home_location}}</p>
         <p><b>Daily Email Subscription: </b>
-            {% if g.user.daily_emails %} Yes
+            {% if user.daily_emails %} Yes
             {% else %} No
             {% endif %}
         </p>
