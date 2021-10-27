@@ -1,6 +1,6 @@
 import os
 import requests, json
-import datetime
+import time
 
 from flask import Flask, render_template, request, flash, redirect, session, g
 from functools import wraps
@@ -168,9 +168,11 @@ def edit_profile():
 # Locations
 
 def get_hourly_data(response):
+    """ Create dir of 12 hours of weather data """
     response = json.loads(response)
     hour_data = []
-    curr_hour = datetime.datetime.now().hour
+    curr_time = response["location"]["localtime_epoch"]
+    curr_hour = int(time.strftime('%H', time.localtime(curr_time)))
     hour = 0
     for i in range(12):
         if curr_hour < 24:
@@ -197,27 +199,50 @@ def get_hourly_data(response):
                     "format_hour": format_hour,
                     "curr_temp": response["forecast"]["forecastday"][1]["hour"][hour]["temp_f"],
                     "temp_icon": response["forecast"]["forecastday"][1]["hour"][hour]["condition"]["icon"]
-                })
+            })
             hour += 1
     return json.dumps(hour_data)
 
+def get_four_day_forecast(response):
+    response = json.loads(response)
+    days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    daily_data = []
+    i = 1
+    while i < 5:
+        day = int(((int(response["forecast"]["forecastday"][i]["date_epoch"]) / 86400) + 4) % 7)
+        data = response["forecast"]["forecastday"][i]["day"]
+        daily_data.append(
+            {   
+                "date": response["forecast"]["forecastday"][i]["date"],
+                "day": days[day],
+                "high_temp": data["maxtemp_f"],
+                "low_temp": data["mintemp_f"],
+                "temp_icon": data["condition"]["icon"]
+        })
+        i+=1
+    return json.dumps(daily_data)
+
 @app.route('/weather')
 def get_weather():
+    """ View weather of searched location """
 
     search = request.args.get('q')
     if not search:
+        search = "San Francisco, CA"
         flash("Please input a location", "danger")
-        return redirect('/')
-    
-    response = requests.get(f'{WEATHER_BASE_URL}{FORECAST_WEATHER}?key={WEATHER_API_KEY}&q={search}&days=4&aqi=yes')
-
-    hour_data = json.loads(get_hourly_data(response.text))
-    # four_day_data = get_four_day_forecast()
-    return render_template('location.html', response=response.json(), hour_data=hour_data)
+        return redirect('/weather?q=San Francisco, CA')
+    if search:
+        response = requests.get(f'{WEATHER_BASE_URL}{FORECAST_WEATHER}?key={WEATHER_API_KEY}&q={search}&days=5&aqi=no&alerts=no')
+        if "No matching location found." in response.text:
+            flash("No matching location, please try again!", "danger")
+            return redirect('/weather?q=San Francisco, CA')
+        hour_data = json.loads(get_hourly_data(response.text))
+        four_day_data = json.loads(get_four_day_forecast(response.text))
+        print(four_day_data)
+        return render_template('location.html', response=response.json(), hour_data=hour_data, four_day_data=four_day_data)
     # return render_template('response.html', response=response)
-    # search for locations from API
-    # if no matches, show error
-    # if matches, show template with cards for locations with info
+
+
 
 ######################################################
 # Homepage
@@ -231,7 +256,6 @@ def homepage():
         return render_template('users/homepage.html', locations=locations)
     else:
         return render_template('users/homepage.html')
-
 
 ##############################################################################
 # Turn off all caching in Flask
