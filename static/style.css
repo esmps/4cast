@@ -4,7 +4,7 @@ body{
     flex-direction: column;
     height: 100vh;
     color:rgb(71, 100, 130);
-    font-family: 'Bodoni Moda', serif;
+    font-family: 'Bodoni Moda', serif !important;
 }
 
 /* Navbar styling */
@@ -50,4 +50,41 @@ footer{
     margin: auto auto 0 auto;
     width: 100vw;
     background-color: whitesmoke;
+}
+
+
+/* Search weather cards */
+
+.loc-name-title{
+    font-size: 25px;
+    padding: 3px;
+    margin: 0px;
+    font-weight: bold;
+}
+.curr-temp{
+    font-size: 30px;
+    padding: 3px;
+    margin: 0px;
+}
+.temp-info{
+    font-family: 'Open Sans', sans-serif;
+}
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Old versions of Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+  }
+
+
+/* Weather background codes */
+
+/* overcast */
+.bg-1009{
+    background-image: url("weather-imgs/overcast.jpg");
+    background-repeat: none;
+    background-size: cover;
 }
