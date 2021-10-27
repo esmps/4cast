@@ -1,14 +1,21 @@
 import os
 import requests, json
+import datetime
 
 from flask import Flask, render_template, request, flash, redirect, session, g
 from functools import wraps
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
+from dotenv import load_dotenv, find_dotenv
 
 from forms import UserAddForm, LoginForm, EditProfileForm
 from models import db, connect_db, User, Location
 
+load_dotenv(find_dotenv())
+WEATHER_BASE_URL = 'http://api.weatherapi.com/v1/'
+CURRENT_WEATHER = 'current.json'
+FORECAST_WEATHER = 'forecast.json'
+WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
 CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
@@ -21,7 +28,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
@@ -31,12 +38,13 @@ connect_db(app)
 
 def verify_user_logged_in(function):
     """ Verify if user is logged in """
-
     @wraps(function)
-    def wrapper():
+    def wrapper(*args, **kwargs):
         if not g.user:
             flash("Access unauthorized.", "danger")
-        return redirect("/")
+            return redirect("/")
+        return function(*args, **kwargs)
+    return wrapper
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -127,29 +135,89 @@ def logout():
 ######################################################
 # User profile
 
-@verify_user_logged_in
 @app.route('/profile')
+@verify_user_logged_in
 def view_profile():
-    return render_template('users/profile.html')
+    user = g.user
+    return render_template('users/profile.html', user=user)
 
 @app.route('/profile/edit', methods=["GET", "POST"])
+@verify_user_logged_in
 def edit_profile():
-    return
-
+    """Update profile for current user."""
+    
+    form = EditProfileForm()
+    user = g.user
+    if form.validate_on_submit():
+        user = User.authenticate(user.email,
+                                 form.password.data)
+        if user:
+            user.first_name = form.first_name.data or user.first_name
+            user.last_name = form.last_name.data or user.last_name
+            user.email = form.email.data or user.email
+            user.home_location = form.home_location.data or user.home_location
+            user.daily_emails = form.daily_emails.data or user.daily_emails
+            db.session.add(user)
+            db.session.commit()
+            flash("Successfully updated profile!", "success")
+            return redirect(f'/profile')
+        flash("Invalid password.", "error")
+    return render_template("/users/edit.html", form=form, user=user)
 
 ######################################################
 # Locations
 
-@app.route('/weather', methods=["GET", "POST"])
+def get_hourly_data(response):
+    response = json.loads(response)
+    hour_data = []
+    curr_hour = datetime.datetime.now().hour
+    hour = 0
+    for i in range(12):
+        if curr_hour < 24:
+            if curr_hour > 12:
+                format_hour = curr_hour - 12
+            else:
+                format_hour = curr_hour 
+            hour_data.append(  
+                {
+                    "hour": curr_hour,
+                    "format_hour": format_hour,
+                    "curr_temp": response["forecast"]["forecastday"][0]["hour"][curr_hour]["temp_f"],
+                    "temp_icon": response["forecast"]["forecastday"][0]["hour"][curr_hour]["condition"]["icon"]
+                })
+            curr_hour += 1
+        else:
+            if hour == 0:
+                format_hour = 12
+            else:
+                format_hour = hour
+            hour_data.append(
+                {
+                    "hour": hour,
+                    "format_hour": format_hour,
+                    "curr_temp": response["forecast"]["forecastday"][1]["hour"][hour]["temp_f"],
+                    "temp_icon": response["forecast"]["forecastday"][1]["hour"][hour]["condition"]["icon"]
+                })
+            hour += 1
+    return json.dumps(hour_data)
+
+@app.route('/weather')
 def get_weather():
+
     search = request.args.get('q')
+    if not search:
+        flash("Please input a location", "danger")
+        return redirect('/')
+    
+    response = requests.get(f'{WEATHER_BASE_URL}{FORECAST_WEATHER}?key={WEATHER_API_KEY}&q={search}&days=4&aqi=yes')
 
-    response = requests.get('http://api.weatherapi.com/v1/')
-
+    hour_data = json.loads(get_hourly_data(response.text))
+    # four_day_data = get_four_day_forecast()
+    return render_template('location.html', response=response.json(), hour_data=hour_data)
+    # return render_template('response.html', response=response)
     # search for locations from API
     # if no matches, show error
     # if matches, show template with cards for locations with info
-
 
 ######################################################
 # Homepage
@@ -163,3 +231,21 @@ def homepage():
         return render_template('users/homepage.html', locations=locations)
     else:
         return render_template('users/homepage.html')
+
+
+##############################################################################
+# Turn off all caching in Flask
+#   (useful for dev; in production, this kind of stuff is typically
+#   handled elsewhere)
+#
+# https://stackoverflow.com/questions/34066804/disabling-caching-in-flask
+
+@app.after_request
+def add_header(req):
+    """Add non-caching headers on every request."""
+
+    req.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    req.headers["Pragma"] = "no-cache"
+    req.headers["Expires"] = "0"
+    req.headers['Cache-Control'] = 'public, max-age=0'
+    return req
