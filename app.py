@@ -7,15 +7,18 @@ from functools import wraps
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from dotenv import load_dotenv, find_dotenv
+from newsapi import NewsApiClient
 
 from forms import UserAddForm, LoginForm, EditProfileForm
 from models import db, connect_db, User, Location
+
 
 load_dotenv(find_dotenv())
 WEATHER_BASE_URL = 'http://api.weatherapi.com/v1/'
 CURRENT_WEATHER = 'current.json'
 FORECAST_WEATHER = 'forecast.json'
 WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
+NEWS_API_KEY = os.getenv('NEWS_API_KEY')
 CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
@@ -92,9 +95,11 @@ def signup():
                 daily_emails=form.daily_emails.data
             )
             db.session.commit()
+            home = User.add_home_location(user.id, form.home_location.data)
+            db.session.commit()
 
         except IntegrityError:
-            flash("Username already taken", 'danger')
+            flash("Email already used", 'danger')
             return render_template('users/signup.html', form=form)
 
         do_login(user)
@@ -116,7 +121,7 @@ def login():
 
         if user:
             do_login(user)
-            flash(f"Hello, {user.email}!", "success")
+            flash(f"Hello, {user.first_name}!", "success")
             return redirect("/")
 
         flash("Invalid credentials.", 'danger')
@@ -167,12 +172,31 @@ def edit_profile():
 ######################################################
 # Locations
 
+def get_daily_info(response):
+    """ Create dir of daily weather data """
+    response = json.loads(response)
+    current = response["current"]
+    astro = response["forecast"]["forecastday"][0]["astro"]
+    daily_info = {
+        "sunrise": astro["sunrise"],
+        "sunset": astro["sunset"],
+        "moonphase": astro["moon_phase"],
+        "windspeed": current["wind_mph"],
+        "winddir": current["wind_dir"],
+        "humidity": current["humidity"],
+        "feelslike_f": current["feelslike_f"],
+        "feelslike_c": current["feelslike_c"],
+        "visibility": current["vis_miles"],
+        "uv": current["uv"],
+        }
+    return json.dumps(daily_info)
+
 def get_hourly_data(response):
     """ Create dir of 12 hours of weather data """
     response = json.loads(response)
     hour_data = []
-    curr_time = response["location"]["localtime_epoch"]
-    curr_hour = int(time.strftime('%H', time.localtime(curr_time)))
+    curr_time = response["current"]["last_updated"]
+    curr_hour = int(curr_time[11:13])
     hour = 0
     for i in range(12):
         if curr_hour < 24:
@@ -228,7 +252,6 @@ def get_weather():
 
     search = request.args.get('q')
     if not search:
-        search = "San Francisco, CA"
         flash("Please input a location", "danger")
         return redirect('/')
     if search:
@@ -238,11 +261,40 @@ def get_weather():
             return redirect('/')
         hour_data = json.loads(get_hourly_data(response.text))
         four_day_data = json.loads(get_four_day_forecast(response.text))
-        print(four_day_data)
-        return render_template('location.html', response=response.json(), hour_data=hour_data, four_day_data=four_day_data)
-    # return render_template('response.html', response=response)
+        daily_info = json.loads(get_daily_info(response.text))
+        locations = g.user.locations
+        return render_template('location.html', response=response.json(), locations=locations, hour_data=hour_data, four_day_data=four_day_data, daily_info=daily_info)
+
+######################################################
+# Favorited Locations
 
 
+@verify_user_logged_in
+@app.route('/unfavorite/<int:location_id>', methods=['POST'])
+def unfavorite_location(location_id):
+    faved_location = Location.query.get(location_id)
+    if g.user:
+        user = User.query.get_or_404(g.user.id)
+        locations = user.locations
+        if faved_location in locations:
+            g.user.locations = [location for location in locations if location != faved_location]
+            db.session.delete(faved_location)
+            db.session.commit()
+    return redirect('/')
+
+######################################################
+# Climate Newsfeed
+
+@app.route('/climatenews/<int:page_id>')
+def newsfeed(page_id):
+    newsapi = NewsApiClient(api_key=NEWS_API_KEY)
+    news = newsapi.get_everything(q='climate, climate change, global warming, weather, natural disaster',
+                                          language='en',
+                                          sort_by='publishedAt',
+                                          page=page_id
+                                          )
+    articles = news["articles"]
+    return render_template('other/newsfeed.html', articles=articles, page_id=page_id)
 
 ######################################################
 # Homepage
@@ -253,7 +305,20 @@ def homepage():
     if g.user:
         user = User.query.get_or_404(g.user.id)
         locations = user.locations
-        return render_template('users/homepage.html', locations=locations)
+        location_data = []
+        for location in locations:
+            response = requests.get(f'{WEATHER_BASE_URL}{FORECAST_WEATHER}?key={WEATHER_API_KEY}&q={location.location}&days=5&aqi=no&alerts=no')
+            hour_data = json.loads(get_hourly_data(response.text))
+            four_day_data = json.loads(get_four_day_forecast(response.text))
+            daily_info = json.loads(get_daily_info(response.text))
+            location_data.append({
+                "id": location.id,
+                "res": response.json(),
+                "hour_data": hour_data,
+                "four_day_data": four_day_data,
+                "daily_info": daily_info
+            })
+        return render_template('users/homepage.html', location_data=location_data)
     else:
         return render_template('users/homepage.html')
 
