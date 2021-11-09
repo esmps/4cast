@@ -1,3 +1,6 @@
+html {
+    scroll-behavior: smooth;
+  }
 body{
     background-color:white;
     display: flex;
@@ -23,6 +26,14 @@ body{
     font-size: 25px;
     font-weight: bold;
 }
+.nav-link{
+    padding: 0px !important;
+}
+.navbar-right{
+    margin: auto 0px 0px auto;
+    justify-content: end;
+    align-items: flex-end;
+}
 
 /* Search bar styling */
 #search-container{
@@ -44,10 +55,12 @@ body{
 }
 
 /* Search weather cards */
+
 .card{
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, 
                 rgba(0, 0, 0, 0.24) 0px 1px 2px;
     margin-bottom: 20px;
+    border: none !important;
 }
 .loc-name-title{
     font-size: 25px;
@@ -77,8 +90,8 @@ body{
     margin-bottom: 3px;
 }
 .hourly-col{
+    background-color: whitesmoke;
     padding: 3px 5px !important;
-    border: .5px solid gainsboro;
     border-radius: 3px;
     margin: 4px;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, 
@@ -88,7 +101,33 @@ body{
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
-    margin-bottom: 10px;
+    margin: 10px 6px;
+}
+#weather-details{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap !important;
+    justify-content: space-between;
+}
+.weather-details-box{
+    flex: auto;
+    margin: 10px;
+    padding: 5px !important;
+}
+
+#weather-forecast, #daily-info{
+    text-align: justify;
+    width: 325px !important;
+    background-color: whitesmoke;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, 
+                rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    border-radius: 3px;
+}
+td{
+    padding-left: 10px;
+}
+tr{
+    height: 35px;
 }
 
 /* Footer styling */
@@ -121,6 +160,7 @@ footer{
 /* width */
 ::-webkit-scrollbar {
     height: 7px;
+    width: 0px;
   }
   
   /* Track */
@@ -139,3 +179,19 @@ footer{
   ::-webkit-scrollbar-thumb:hover {
     background: rgb(78, 98, 118); 
   }
+
+
+/* NEWS FEED */
+
+ul{
+    list-style-type: none;
+}
+a{
+    cursor: pointer;
+}
+
+
+/* BUTTONS */
+.btn-block:hover{
+    background-color: rgb(129, 162, 196) !important;
+}
