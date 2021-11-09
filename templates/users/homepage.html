@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+
+{% block title %}Homepage{% endblock %}
+
 {% block content %}
 <div class="container-fluid justify-content-center" id="search-container">
     {% if not g.user %}
@@ -18,22 +21,80 @@
 
 <!-- IF USER IS LOGGED IN, SHOW FAVORITED LOCATIONS -->
 {% if g.user %}
-<div id="accordion" class="container">
-    {% for location in locations %}
-    <div class="card">
-      <div class="card-header">
-        <a class="btn" data-bs-toggle="collapse" href="#collapse-{{location.id}}">
-          {{ location.location }}
-        </a>
-      </div>
-      <div id="collapse-{{location.id}}" class="collapse" data-bs-parent="#accordion">
-        <div class="card-body">
-          Data here for {{location.location}}
-        </div>
+
+<div id="accordion" class="accordian container noselect">
+  {% for location in location_data %}
+  <div class="card accordian-item">
+    <div class="card-header accordion-header container bg-{{location.res.current.condition.code}}">
+      <div class="row justify-content-between" data-bs-toggle="collapse" data-bs-target="#collapse-{{location.name}}" aria-expanded="false" aria-controls="collapse-{{location.name}}" style="cursor: pointer;">
+          <div class="col">
+              <p class="loc-name-title">{{ location.res.location.name }}, {{ location.res.location.region }}</p>
+              <i>{{ location.res.current.condition.text }}</i>
+          </div>
+          <div class="col-4 text-end">
+              <p class="curr-temp">{{ location.res.current.temp_f}}˚F</p>
+              <small>H: {{ location.res.forecast.forecastday[0].day.maxtemp_f }}˚ | L: {{ location.res.forecast.forecastday[0].day.mintemp_f }}˚</small>
+          </div>
       </div>
     </div>
-    {% endfor %}
+
+    <div id="collapse-{{location.name}}">
+      <div class="card-body accordion-body container temp-info">
+          <div class="row text-center" id="hourly-weather">
+              {% for hour in location.hour_data %}
+              <div class="col hourly-col">
+                  <p>{{hour.format_hour}}{% if hour.hour >= 0 and hour.hour < 12 %}<small>AM</small>{% else %}<small>PM</small>{% endif %}</p>
+                  <img src="{{hour.temp_icon}}" style="height: 35px;">
+                  <p><b>{{hour.curr_temp}}˚</b></p>
+              </div>
+              {% endfor %}
+          </div>
+
+          <div id="weather-details">
+            <table class="weather-details-box text-center" id="daily-info">
+                <tr >     
+                  <td><b>Feels Like:</b> {{location.daily_info.feelslike_f}} ˚F</td>
+                  <td><b>Humidity:</b> {{location.daily_info.humidity}}%</td>   
+                </tr>
+                <tr>
+                  <td><b>Sunrise:</b> {{location.daily_info.sunrise}}</td>
+                  <td><b>Sunset:</b> {{location.daily_info.sunset}}</td>
+                </tr>
+                <tr>
+                  <td><b>Visibility:</b> {{location.daily_info.visibility}} miles</td>
+                  <td><b>Windspeed:</b> <small>{{location.daily_info.winddir}}</small> {{location.daily_info.windspeed}} mph</td>
+                </tr>
+                <tr>
+                  <td><b>UV Index:</b> {{location.daily_info.uv}}</td>
+                  <td><b>Moonphase:</b> {{location.daily_info.moonphase}}</td>
+                </tr> 
+            </table> 
+            <table class="weather-details-box" id="weather-forecast">
+              {% for day_weather in location.four_day_data %}
+                <tr>
+                  <td style="width: 100px;">{{day_weather.day}}</td>
+                  <td style="text-align:center;"><img src="{{day_weather.temp_icon}}" style="height: 35px;"></td>
+                  <td style="width: 105px">{{day_weather.high_temp}}˚ <b>/</b> {{day_weather.low_temp}}˚</td>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+
+          <div>
+              <i class="fas fa-star favorite-btn" style="font-size: 30px; color: gold; margin: 0px 10px; cursor: pointer;"></i>
+              <button class="btn-info c-f-btn">˚F / ˚C</button>
+          </div>
+
+      </div>
+    </div>
+
+
+  </div>
+  {% endfor %}
 </div>
+
+
+
 
 
 {% endif %}

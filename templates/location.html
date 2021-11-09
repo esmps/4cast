@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block title %}Search{% endblock %}
+
 {% block content %}
 
 <div class="container-fluid justify-content-center" id="search-container">
@@ -41,18 +43,43 @@
                 </div>
                 {% endfor %}
             </div>
-            <div class="row" id="weather-details">
-                <ul class="col">
-                    {% for day_weather in four_day_data %}
-                        <li style="list-style-type: none;">
-                            <p>{{day_weather.day}} <img src="{{day_weather.temp_icon}}" style="height: 35px;"> {{day_weather.high_temp}}˚F | {{day_weather.low_temp}}˚F</p>
-                        </li>
-                    {% endfor %}
-                </ul>
-                <div class="col">
-                    
-                </div>
-            </div>
+
+            <div id="weather-details">
+            <table class="weather-details-box text-center" id="daily-info">
+                <tr >     
+                  <td><b>Feels Like:</b> {{daily_info.feelslike_f}} ˚F</td>
+                  <td><b>Humidity:</b> {{daily_info.humidity}}%</td>   
+                </tr>
+                <tr>
+                  <td><b>Sunrise:</b> {{daily_info.sunrise}}</td>
+                  <td><b>Sunset:</b> {{daily_info.sunset}}</td>
+                </tr>
+                <tr>
+                  <td><b>Visibility:</b> {{daily_info.visibility}} miles</td>
+                  <td><b>Windspeed:</b> <small>{{daily_info.winddir}}</small> {{daily_info.windspeed}} mph</td>
+                </tr>
+                <tr>
+                  <td><b>UV Index:</b> {{daily_info.uv}}</td>
+                  <td><b>Moonphase:</b> {{daily_info.moonphase}}</td>
+                </tr> 
+            </table> 
+            <table class="weather-details-box" id="weather-forecast">
+              {% for day_weather in four_day_data %}
+                <tr>
+                  <td style="width: 100px;">{{day_weather.day}}</td>
+                  <td style="text-align:center;"><img src="{{day_weather.temp_icon}}" style="height: 35px;"></td>
+                  <td style="width: 125px">{{day_weather.high_temp}}˚F | {{day_weather.low_temp}}˚F</td>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+
+        <div>
+            <i class="far fa-star" style="font-size: 30px; color: gold; margin: 0px 10px; cursor: pointer;"></i>
+            <button class="btn-primary">˚F / ˚C</button>
+        </div>
+
+
         </div>
       </div>
     </div>

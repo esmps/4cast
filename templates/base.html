@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="top">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -28,7 +28,10 @@
             <img src="/static/images/nav-logo.png" alt="logo" style="height: 60px; padding: 2px;">
             </a>
           </div>
-          <ul class="nav navbar-nav navbar-right" >
+          <ul class="nav navbar-nav navbar-right">
+            <li class="nav-link">
+                <a href="{{ url_for('newsfeed', page_id=1) }}">Climate News</a>
+            </li>
             {% if not g.user %}
             <li class="nav-link">
                 <a href="{{ url_for('signup') }}">Sign up</a>
@@ -38,7 +41,7 @@
             </li>
             {% else %}
             <li class="nav-link">
-                <a href="{{ url_for('view_profile') }}">{{g.user.full_name()}}</a>
+                <a href="{{ url_for('view_profile') }}">@{{g.user.full_name()}}</a>
             </li>
             <li class="nav-link">
                 <a href="{{ url_for('logout') }}">Log out</a>
@@ -58,7 +61,7 @@
         {% endblock %}
     
     <footer>
-        <p style="font-size: 10px; line-height: 30px">Created by Emma Pines-Schwartz 2021 | Powered by <a href="https://www.weatherapi.com/" title="Free Weather API">WeatherAPI.com</a></p>
+        <p style="font-size: 12px; line-height: 30px">Created by Emma Pines-Schwartz 2021 | Powered by <a href="https://www.weatherapi.com/" title="Free Weather API">WeatherAPI.com</a></p>
     </footer>
 </body>
 </html>

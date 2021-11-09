@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block title %}Edit Profile{% endblock %}
+
 {% block content %}
 
   <div class="row justify-content-md-center">
@@ -9,10 +11,16 @@
         {{ form.hidden_tag() }}
 
         {% for field in form if field.widget.input_type != 'hidden' and field.name != 'password' %}
+        
           {% for error in field.errors %}
             <span class="text-danger">{{ error }}</span>
           {% endfor %}
-          {{ field(placeholder=field.label.text, class="form-control") }}
+          {% if field.type == "BooleanField" %}
+            {{ field }} {{ field.label }}
+          {% else %}
+            {{ field(placeholder=field.label.text, class="form-control") }}
+          {% endif %}
+
         {% endfor %}
 
         <p>To confirm changes, enter your password:</p>
@@ -27,7 +35,7 @@
 
         <div class="edit-btn-area">
           <button class="btn btn-success">Edit this user!</button>
-          <a href="" class="btn btn-outline-secondary">Cancel</a>
+          <a href="{{ url_for('view_profile')}}" class="btn btn-outline-secondary">Cancel</a>
         </div>
       </form>
     </div>
