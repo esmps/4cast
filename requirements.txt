@@ -20,6 +20,7 @@ itsdangerous==0.24
 jedi==0.13.1
 Jinja2==2.10
 MarkupSafe==1.1.1
+newsapi-python==0.2.6
 parso==0.3.1
 pexpect==4.6.0
 pickleshare==0.7.5
