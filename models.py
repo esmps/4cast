@@ -13,7 +13,7 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, unique=True)
 
-    first_name = db.Column(db.Text, nullable=False)
+    first_name = db.Column(db.Text, nullable=False, unique=False)
 
     last_name = db.Column(db.Text, nullable=False)
 
@@ -48,7 +48,15 @@ class User(db.Model):
         )
 
         db.session.add(user)
+        print(user.full_name(), user.email)
         return user
+
+    @classmethod
+    def add_home_location(cls, user_id, home_location):
+
+        home = Location(user_id=user_id, location=home_location)
+        db.session.add(home)
+        return home
 
     @classmethod
     def authenticate(cls, email, password):
@@ -76,7 +84,7 @@ class Location(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, unique=True)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     location = db.Column(db.Text, nullable=False)
 
