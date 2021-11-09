@@ -28,3 +28,4 @@ class EditProfileForm(FlaskForm):
     email = StringField('E-mail', validators=[Email(), Optional()])
     home_location = StringField('Home Location')
     password = PasswordField('Password', validators=[DataRequired()])
+    daily_emails = BooleanField('Daily Weather Updates')
