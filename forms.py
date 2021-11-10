@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField
+from wtforms import StringField, PasswordField, BooleanField, SelectField
 from wtforms.validators import DataRequired, Email, Length, Optional
 
 class UserAddForm(FlaskForm):
@@ -10,7 +10,7 @@ class UserAddForm(FlaskForm):
     email = StringField('E-mail', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[Length(min=6)])
     home_location = StringField('Home Location')
-    daily_emails = BooleanField('Daily Weather Updates')
+    c_or_f = SelectField('C or F', choices=[('c', 'C'), ('f', 'F')], validators=[Length(min=1, max=1)])
 
 
 class LoginForm(FlaskForm):
@@ -28,4 +28,4 @@ class EditProfileForm(FlaskForm):
     email = StringField('E-mail', validators=[Email(), Optional()])
     home_location = StringField('Home Location')
     password = PasswordField('Password', validators=[DataRequired()])
-    daily_emails = BooleanField('Daily Weather Updates')
+    c_or_f = SelectField('C or F', choices=[('c', 'C'), ('f', 'F')], validators=[Length(min=1, max=1), Optional()])
