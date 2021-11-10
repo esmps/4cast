@@ -40,7 +40,8 @@ connect_db(app)
 # Decorators
 
 def verify_user_logged_in(function):
-    """ Verify if user is logged in """
+    """ Custom decorated to verify if user is logged in """
+
     @wraps(function)
     def wrapper(*args, **kwargs):
         if not g.user:
@@ -52,6 +53,7 @@ def verify_user_logged_in(function):
 @app.errorhandler(404)
 def page_not_found(e):
     """ Custom 404 page """
+
     return render_template('other/404.html'), 404
 
 @app.before_request
@@ -78,6 +80,16 @@ def do_logout():
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
 
+
+def fav_home_location(response, user):
+    res = json.loads(response)
+    home = Location(
+        user_id=user.id,
+        location=f'{res["location"]["name"]}, {res["location"]["region"]}'
+    )
+    db.session.add(home)
+    return home
+
 @app.route('/signup', methods=["GET", "POST"])
 def signup():
     """Handle user signup. """
@@ -85,27 +97,28 @@ def signup():
     form = UserAddForm()
 
     if form.validate_on_submit():
+        response = requests.get(f'{WEATHER_BASE_URL}{FORECAST_WEATHER}?key={WEATHER_API_KEY}&q={form.home_location.data}&days=5&aqi=no&alerts=no')
+        print(response.json())
+        if "No matching location found." in response.text:
+            flash("No matching location, please try again!", "danger")
+            return redirect('/signup')
         try:
             user = User.signup(
                 first_name=form.first_name.data,
                 last_name=form.last_name.data,
                 email=form.email.data,
                 password=form.password.data,
-                home_location=form.home_location.data,
-                daily_emails=form.daily_emails.data
+                home_location=f'{res["location"]["name"]}, {res["location"]["region"]}',
+                c_or_f=form.c_or_f.data
             )
             db.session.commit()
-            home = User.add_home_location(user.id, form.home_location.data)
+            fav_home_location(response.text, user)
             db.session.commit()
-
         except IntegrityError:
             flash("Email already used", 'danger')
             return render_template('users/signup.html', form=form)
-
         do_login(user)
-
         return redirect("/")
-
     else:
         return render_template('users/signup.html', form=form)
 
@@ -114,23 +127,20 @@ def login():
     """Handle user login."""
 
     form = LoginForm()
-
     if form.validate_on_submit():
         user = User.authenticate(form.email.data,
                                  form.password.data)
-
         if user:
             do_login(user)
             flash(f"Hello, {user.first_name}!", "success")
             return redirect("/")
-
         flash("Invalid credentials.", 'danger')
-
     return render_template('users/login.html', form=form)
 
 @app.route('/logout')
 def logout():
     """Handle logout of user."""
+
     if g.user:
         do_logout()
         flash("Successfully logged out.", 'success')
@@ -143,6 +153,7 @@ def logout():
 @app.route('/profile')
 @verify_user_logged_in
 def view_profile():
+    """ Show user profile """ 
     user = g.user
     return render_template('users/profile.html', user=user)
 
@@ -153,17 +164,38 @@ def edit_profile():
     
     form = EditProfileForm()
     user = g.user
+    old_home_location = Location.query.filter(Location.user_id==user.id, Location.location==user.home_location).first()
     if form.validate_on_submit():
+        response = requests.get(f'{WEATHER_BASE_URL}{FORECAST_WEATHER}?key={WEATHER_API_KEY}&q={form.home_location.data}&days=5&aqi=no&alerts=no')
+        if "No matching location found." in response.text:
+            flash("No matching location, please try again!", "danger")
+            return redirect('/signup')
+
         user = User.authenticate(user.email,
                                  form.password.data)
+       
         if user:
             user.first_name = form.first_name.data or user.first_name
             user.last_name = form.last_name.data or user.last_name
             user.email = form.email.data or user.email
-            user.home_location = form.home_location.data or user.home_location
-            user.daily_emails = form.daily_emails.data or user.daily_emails
+            if form.home_location.data:
+                user.home_location = f'{response.json()["location"]["name"]}, {response.json()["location"]["region"]}'
+            else:
+                user.home_location = user.home_location
+            user.c_or_f = form.c_or_f.data or user.c_or_f
             db.session.add(user)
             db.session.commit()
+
+            if form.home_location.data:
+                new_home_location = fav_home_location(response.text, user)
+                db.session.commit()
+
+                locations = user.locations
+                if old_home_location in locations:
+                    g.user.locations = [location for location in locations if location != old_home_location]
+                    db.session.delete(old_home_location)
+                    db.session.commit()
+
             flash("Successfully updated profile!", "success")
             return redirect(f'/profile')
         flash("Invalid password.", "error")
@@ -174,6 +206,7 @@ def edit_profile():
 
 def get_daily_info(response):
     """ Create dir of daily weather data """
+
     response = json.loads(response)
     current = response["current"]
     astro = response["forecast"]["forecastday"][0]["astro"]
@@ -191,7 +224,7 @@ def get_daily_info(response):
         }
     return json.dumps(daily_info)
 
-def get_hourly_data(response):
+def get_hourly_data(response, temp_pref):
     """ Create dir of 12 hours of weather data """
     response = json.loads(response)
     hour_data = []
@@ -208,7 +241,7 @@ def get_hourly_data(response):
                 {
                     "hour": curr_hour,
                     "format_hour": format_hour,
-                    "curr_temp": response["forecast"]["forecastday"][0]["hour"][curr_hour]["temp_f"],
+                    "curr_temp": response["forecast"]["forecastday"][0]["hour"][curr_hour][f"temp_{temp_pref}"],
                     "temp_icon": response["forecast"]["forecastday"][0]["hour"][curr_hour]["condition"]["icon"]
                 })
             curr_hour += 1
@@ -221,13 +254,15 @@ def get_hourly_data(response):
                 {
                     "hour": hour,
                     "format_hour": format_hour,
-                    "curr_temp": response["forecast"]["forecastday"][1]["hour"][hour]["temp_f"],
+                    "curr_temp": response["forecast"]["forecastday"][1]["hour"][hour][f"temp_{temp_pref}"],
                     "temp_icon": response["forecast"]["forecastday"][1]["hour"][hour]["condition"]["icon"]
             })
             hour += 1
     return json.dumps(hour_data)
 
-def get_four_day_forecast(response):
+def get_four_day_forecast(response, temp_pref):
+    """ Get forecast information for next four days """
+
     response = json.loads(response)
     days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     daily_data = []
@@ -239,8 +274,8 @@ def get_four_day_forecast(response):
             {   
                 "date": response["forecast"]["forecastday"][i]["date"],
                 "day": days[day],
-                "high_temp": data["maxtemp_f"],
-                "low_temp": data["mintemp_f"],
+                "high_temp": data[f"maxtemp_{temp_pref}"],
+                "low_temp": data[f"mintemp_{temp_pref}"],
                 "temp_icon": data["condition"]["icon"]
         })
         i+=1
@@ -259,19 +294,28 @@ def get_weather():
         if "No matching location found." in response.text:
             flash("No matching location, please try again!", "danger")
             return redirect('/')
-        hour_data = json.loads(get_hourly_data(response.text))
-        four_day_data = json.loads(get_four_day_forecast(response.text))
-        daily_info = json.loads(get_daily_info(response.text))
-        locations = g.user.locations
-        return render_template('location.html', response=response.json(), locations=locations, hour_data=hour_data, four_day_data=four_day_data, daily_info=daily_info)
+        if g.user:
+            hour_data = json.loads(get_hourly_data(response.text, g.user.c_or_f))
+            four_day_data = json.loads(get_four_day_forecast(response.text, g.user.c_or_f))
+            daily_info = json.loads(get_daily_info(response.text))
+            locations = []
+            for location in g.user.locations:
+                locations.append(location.location)
+            return render_template('location.html', response=response.json(), locations=locations, hour_data=hour_data, four_day_data=four_day_data, daily_info=daily_info)
+        else:
+            hour_data = json.loads(get_hourly_data(response.text, "F"))
+            four_day_data = json.loads(get_four_day_forecast(response.text, "F"))
+            daily_info = json.loads(get_daily_info(response.text))
+            return render_template('location.html', response=response.json(), hour_data=hour_data, four_day_data=four_day_data, daily_info=daily_info)
 
 ######################################################
 # Favorited Locations
 
-
 @verify_user_logged_in
 @app.route('/unfavorite/<int:location_id>', methods=['POST'])
 def unfavorite_location(location_id):
+    """ Remove location from favorites"""
+
     faved_location = Location.query.get(location_id)
     if g.user:
         user = User.query.get_or_404(g.user.id)
@@ -282,17 +326,38 @@ def unfavorite_location(location_id):
             db.session.commit()
     return redirect('/')
 
+@verify_user_logged_in
+@app.route('/favorite/<new_location>', methods=['POST'])
+def favorite_location(new_location):
+    """ Add location from favorites"""
+
+    if g.user:
+        user = User.query.get_or_404(g.user.id)
+        print(user)
+        locations = user.locations
+        for location in locations:
+            if new_location==location.location:
+                flash("Location already favorited", "danger")
+                return redirect('/')
+        add_location = Location(user_id=user.id, location=new_location)
+        db.session.add(add_location)
+        db.session.commit()
+        g.user.locations.append(add_location)
+    return redirect('/')
+
 ######################################################
 # Climate Newsfeed
 
 @app.route('/climatenews/<int:page_id>')
 def newsfeed(page_id):
+    """ Show climate news articles depending on page """
+
     newsapi = NewsApiClient(api_key=NEWS_API_KEY)
-    news = newsapi.get_everything(q='climate, climate change, global warming, weather, natural disaster',
-                                          language='en',
-                                          sort_by='publishedAt',
-                                          page=page_id
-                                          )
+    news = newsapi.get_everything(
+        q='climate, climate change, global warming, weather, natural disaster',
+        language='en',
+        sort_by='publishedAt',
+        )
     articles = news["articles"]
     return render_template('other/newsfeed.html', articles=articles, page_id=page_id)
 
@@ -301,6 +366,7 @@ def newsfeed(page_id):
 
 @app.route('/')
 def homepage():
+    """ Show search bar and if signed in, show favorite locations """
 
     if g.user:
         user = User.query.get_or_404(g.user.id)
@@ -308,8 +374,8 @@ def homepage():
         location_data = []
         for location in locations:
             response = requests.get(f'{WEATHER_BASE_URL}{FORECAST_WEATHER}?key={WEATHER_API_KEY}&q={location.location}&days=5&aqi=no&alerts=no')
-            hour_data = json.loads(get_hourly_data(response.text))
-            four_day_data = json.loads(get_four_day_forecast(response.text))
+            hour_data = json.loads(get_hourly_data(response.text, g.user.c_or_f))
+            four_day_data = json.loads(get_four_day_forecast(response.text, g.user.c_or_f))
             daily_info = json.loads(get_daily_info(response.text))
             location_data.append({
                 "id": location.id,
