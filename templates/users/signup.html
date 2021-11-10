@@ -14,19 +14,10 @@
         {% for error in field.errors %}
           <span class="text-danger">{{ error }}</span>
         {% endfor %}
-        {% if field.type == "BooleanField" %}
-            <td>
-              {{ field(class="my-3") }} {{ field.label }}
-            </td>
-        {% else %}
-            <td> 
-              {{ field(placeholder=field.label.text, autocomplete="off", class="form-control my-3") }}
-            </td>
-           
-        {% endif %}
+        {{ field(placeholder=field.label.text, autocomplete="off", class="form-control my-3") }}
       {% endfor %}
       <br>
-      <button class="btn btn-block" style="background-color: rgb(71, 100, 130); color:white;">Sign me up!</button>
+      <button class="btn btn-block">Sign me up!</button>
     </form>
   </div>
 </div>

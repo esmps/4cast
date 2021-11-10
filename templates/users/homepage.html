@@ -23,29 +23,32 @@
 {% if g.user %}
 
 <div id="accordion" class="accordian container noselect">
-  {% for location in location_data %}
-  <div class="card accordian-item">
-    <div class="card-header accordion-header container bg-{{location.res.current.condition.code}}">
-      <div class="row justify-content-between" data-bs-toggle="collapse" data-bs-target="#collapse-{{location.name}}" aria-expanded="false" aria-controls="collapse-{{location.name}}" style="cursor: pointer;">
+  <ul id="weather-card" style="padding-left: 0px;">
+    {% for location in location_data %}
+    <li class="card accordian-item" data-location-id="{{location.id}}">
+      <div class="card-header accordion-header container bg-{{location.res.current.condition.code}}">
+        <div class="row justify-content-between" data-bs-toggle="collapse" data-bs-target="#collapse-{{location.name}}" aria-expanded="false" aria-controls="collapse-{{location.name}}" style="cursor: pointer;">
           <div class="col">
-              <p class="loc-name-title">{{ location.res.location.name }}, {{ location.res.location.region }}</p>
-              <i>{{ location.res.current.condition.text }}</i>
+            <p class="loc-name-title">{{ location.res.location.name }}, {{ location.res.location.region }}</p>
+            <i>{{ location.res.current.condition.text }}</i>
           </div>
           <div class="col-4 text-end">
-              <p class="curr-temp">{{ location.res.current.temp_f}}˚F</p>
-              <small>H: {{ location.res.forecast.forecastday[0].day.maxtemp_f }}˚ | L: {{ location.res.forecast.forecastday[0].day.mintemp_f }}˚</small>
-          </div>
-      </div>
-    </div>
+            <p class="curr-temp">{%if g.user.c_or_f == "c" %}{{location.res.current.temp_c}}{% else %}{{location.res.current.temp_f}}{% endif %}˚{% if g.user.c_or_f == "c" %}C {% else %}F {% endif %}</p>
 
-    <div id="collapse-{{location.name}}">
-      <div class="card-body accordion-body container temp-info">
+            
+            <small>H: {%if g.user.c_or_f == "c" %}{{location.res.forecast.forecastday[0].day.maxtemp_c}}{% else %}{{location.res.forecast.forecastday[0].day.maxtemp_f}}{% endif %}˚ | L: {%if g.user.c_or_f == "c" %}{{location.res.forecast.forecastday[0].day.mintemp_c}}{% else %}{{location.res.forecast.forecastday[0].day.mintemp_f}}{% endif %}˚</small>
+          </div>
+        </div>
+      </div>
+
+      <div id="collapse-{{location.name}}" class="collapse show" data-bs-parent="#accordion">
+        <div class="card-body accordion-body container temp-info">
           <div class="row text-center" id="hourly-weather">
               {% for hour in location.hour_data %}
               <div class="col hourly-col">
-                  <p>{{hour.format_hour}}{% if hour.hour >= 0 and hour.hour < 12 %}<small>AM</small>{% else %}<small>PM</small>{% endif %}</p>
-                  <img src="{{hour.temp_icon}}" style="height: 35px;">
-                  <p><b>{{hour.curr_temp}}˚</b></p>
+                <p>{{hour.format_hour}}{% if hour.hour >= 0 and hour.hour < 12 %}<small>AM</small>{% else %}<small>PM</small>{% endif %}</p>
+                <img src="{{hour.temp_icon}}" style="height: 35px;">
+                <p><b>{{hour.curr_temp}}˚</b></p>
               </div>
               {% endfor %}
           </div>
@@ -53,7 +56,7 @@
           <div id="weather-details">
             <table class="weather-details-box text-center" id="daily-info">
                 <tr >     
-                  <td><b>Feels Like:</b> {{location.daily_info.feelslike_f}} ˚F</td>
+                  <td><b>Feels Like:</b> {% if g.user.c_or_f == "c" %} {{location.daily_info.feelslike_c}}{% else %} {{location.daily_info.feelslike_f}}{% endif %}˚</td>
                   <td><b>Humidity:</b> {{location.daily_info.humidity}}%</td>   
                 </tr>
                 <tr>
@@ -61,14 +64,15 @@
                   <td><b>Sunset:</b> {{location.daily_info.sunset}}</td>
                 </tr>
                 <tr>
-                  <td><b>Visibility:</b> {{location.daily_info.visibility}} miles</td>
-                  <td><b>Windspeed:</b> <small>{{location.daily_info.winddir}}</small> {{location.daily_info.windspeed}} mph</td>
+                  <td><b>Visibility:</b> {{location.daily_info.visibility}} <small>miles</small></td>
+                  <td><b>Windspeed:</b> <small>{{location.daily_info.winddir}}</small> {{location.daily_info.windspeed}} <small>mph</small></td>
                 </tr>
                 <tr>
                   <td><b>UV Index:</b> {{location.daily_info.uv}}</td>
                   <td><b>Moonphase:</b> {{location.daily_info.moonphase}}</td>
                 </tr> 
             </table> 
+
             <table class="weather-details-box" id="weather-forecast">
               {% for day_weather in location.four_day_data %}
                 <tr>
@@ -80,24 +84,18 @@
             </table>
           </div>
 
-          <div>
-              <i class="fas fa-star favorite-btn" style="font-size: 30px; color: gold; margin: 0px 10px; cursor: pointer;"></i>
-              <button class="btn-info c-f-btn">˚F / ˚C</button>
+          <div class="d-flex flex-row justify-content-end" style="margin: 0px">
+            <a class="btn btn-block mx-2 remove-fav">Remove From Favorites</a>
           </div>
 
+        </div>
       </div>
-    </div>
-
-
-  </div>
+    </li>
   {% endfor %}
+  </ul>
 </div>
-
-
-
-
-
 {% endif %}
 
+<script src="/static/javascript/favorites.js"></script>
 
 {% endblock %}

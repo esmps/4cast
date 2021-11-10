@@ -10,13 +10,9 @@
         <h3>{{user.full_name()}}</h3>
         <p><b>Email: </b>{{user.email}}</p>
         <p><b>Home Location: </b>{{user.home_location}}</p>
-        <p><b>Daily Email Subscription: </b>
-            {% if user.daily_emails %} Yes
-            {% else %} No
-            {% endif %}
-        </p>
-        <a href="{{ url_for('edit_profile')}}" class="btn btn-block" style="background-color: rgb(71, 100, 130); color:white;">Edit Profile</a>
-        <a href="{{ url_for('homepage')}}" class="btn btn-block" style="background-color: rgb(71, 100, 130); color:white;">Home</a>
+        <p><b>Temperature Preferences:</b> ˚{{user.c_or_f.upper()}}</p>
+        <a href="{{ url_for('edit_profile')}}" class="btn btn-block">Edit Profile</a>
+        <a href="{{ url_for('homepage')}}" class="btn btn-block">Home</a>
     </div>
 </div>
 {% endblock %}

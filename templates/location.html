@@ -18,8 +18,8 @@
 
 <!-- ACCORDIAN STYLE -->
 <div id="accordion" class="container noselect">
-
-    <div class="card">
+  <ul id="weather-card" style="padding-left: 0px;">
+    <li class="card" id="search-weather-card" data-location-id="{% for location in locations %}{% if response.location.name in location.location %}{{location.id}}{% endif %}{% endfor %}" data-location-name="{{response.location.name}}, {{response.location.region}}">
       <div class="card-header container bg-{{response.current.condition.code}}">
         <div class="row justify-content-between" data-bs-toggle="collapse" href="#collapseOne" style="cursor: pointer;">
             <div class="col">
@@ -27,19 +27,19 @@
                 <i>{{ response.current.condition.text }}</i>
             </div>
             <div class="col-4 text-end">
-                <p class="curr-temp">{{ response.current.temp_f}}˚F</p>
-                <small><b>H:</b> {{response.forecast.forecastday[0].day.maxtemp_f}}˚F | <b>L:</b> {{response.forecast.forecastday[0].day.mintemp_f}}˚F</small>
+                <p class="curr-temp">{%if g.user.c_or_f == "C" %}{{response.current.temp_c}}{% else %}{{response.current.temp_f}}{% endif %}˚{% if g.user.c_or_f == "C" %}C {% else %}F {% endif %}</p>
+                <small>H: {%if g.user.c_or_f == "C" %}{{response.forecast.forecastday[0].day.maxtemp_c}}{% else %}{{response.forecast.forecastday[0].day.maxtemp_f}}{% endif %}˚ | L: {%if g.user.c_or_f == "C" %}{{response.forecast.forecastday[0].day.mintemp_c}}{% else %}{{response.forecast.forecastday[0].day.mintemp_f}}{% endif %}˚</small>
             </div>
         </div>
       </div>
       <div id="collapseOne" class="collapse show" data-bs-parent="#accordion">
-        <div class="card-body container temp-info">
+        <div class="card-body accordion-body container temp-info">
             <div class="row text-center" id="hourly-weather">
                 {% for hour in hour_data %}
                 <div class="col hourly-col">
                     <p>{{hour.format_hour}}{% if hour.hour >= 0 and hour.hour < 12 %}<small>AM</small>{% else %}<small>PM</small>{% endif %}</p>
                     <img src="{{hour.temp_icon}}" style="height: 35px;">
-                    <p><b>{{hour.curr_temp}}˚F</b></p>
+                    <p><b>{{hour.curr_temp}}˚</b></p>
                 </div>
                 {% endfor %}
             </div>
@@ -47,7 +47,7 @@
             <div id="weather-details">
             <table class="weather-details-box text-center" id="daily-info">
                 <tr >     
-                  <td><b>Feels Like:</b> {{daily_info.feelslike_f}} ˚F</td>
+                  <td><b>Feels Like:</b> {% if g.user.c_or_f == "C" %} {{daily_info.feelslike_c}}{% else %} {{daily_info.feelslike_f}}{% endif %}˚</td>
                   <td><b>Humidity:</b> {{daily_info.humidity}}%</td>   
                 </tr>
                 <tr>
@@ -55,8 +55,8 @@
                   <td><b>Sunset:</b> {{daily_info.sunset}}</td>
                 </tr>
                 <tr>
-                  <td><b>Visibility:</b> {{daily_info.visibility}} miles</td>
-                  <td><b>Windspeed:</b> <small>{{daily_info.winddir}}</small> {{daily_info.windspeed}} mph</td>
+                  <td><b>Visibility:</b> {{daily_info.visibility}} <small>miles</small></td>
+                  <td><b>Windspeed:</b> <small>{{daily_info.winddir}}</small> {{daily_info.windspeed}} <small>mph</small></td>
                 </tr>
                 <tr>
                   <td><b>UV Index:</b> {{daily_info.uv}}</td>
@@ -68,23 +68,31 @@
                 <tr>
                   <td style="width: 100px;">{{day_weather.day}}</td>
                   <td style="text-align:center;"><img src="{{day_weather.temp_icon}}" style="height: 35px;"></td>
-                  <td style="width: 125px">{{day_weather.high_temp}}˚F | {{day_weather.low_temp}}˚F</td>
+                  <td style="width: 105px">{{day_weather.high_temp}}˚ <b>/</b> {{day_weather.low_temp}}˚</td>
                 </tr>
               {% endfor %}
             </table>
           </div>
 
-        <div>
-            <i class="far fa-star" style="font-size: 30px; color: gold; margin: 0px 10px; cursor: pointer;"></i>
-            <button class="btn-primary">˚F / ˚C</button>
-        </div>
-
+          {% if g.user %}
+            <div class="d-flex flex-row justify-content-end" style="margin: 0px">
+              
+              {% if (response.location.name + ', ' + response.location.region) in locations %}
+                <a class="btn btn-block mx-2 remove-fav">Remove From Favorites</a>
+              {% else %}
+                <a class="btn btn-block mx-2 add-fav">Add to Favorites</a>
+              {% endif %}
+              
+            </div>
+          {% endif %}
 
         </div>
       </div>
-    </div>
-  
+    </li>
+    </ul>
   </div>
+
+<script src="/static/javascript/favorites.js"></script>
 
 
 {% endblock %}
