@@ -12,10 +12,11 @@ body{
 
 /* Navbar styling */
 .nav.navbar-nav.navbar-right li a {
+    font-size: 16px;
     font-weight: bold;
     color: rgb(71, 100, 130);
     text-decoration: none !important;
-    padding: 0 20px;
+    padding: 0 8px 0 4px;
 }
 .nav.navbar-nav.navbar-right li:hover a:hover {
     color: rgb(129, 162, 196);
@@ -184,7 +185,11 @@ footer{
 /* NEWS FEED */
 
 ul{
-    list-style-type: none;
+    list-style-type: none !important;
+}
+li{
+    list-style-type: none !important;
+
 }
 a{
     cursor: pointer;
@@ -192,6 +197,10 @@ a{
 
 
 /* BUTTONS */
+.btn-block{
+    background-color: rgb(71, 100, 130) !important;
+    color:white !important;
+}
 .btn-block:hover{
     background-color: rgb(129, 162, 196) !important;
 }
