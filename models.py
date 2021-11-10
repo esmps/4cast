@@ -23,7 +23,7 @@ class User(db.Model):
 
     home_location = db.Column(db.Text, nullable=True)
 
-    daily_emails = db.Column(db.Boolean, default=False)
+    c_or_f = db.Column(db.String(1), nullable=False, default="F")
 
     locations = db.relationship('Location')
 
@@ -31,7 +31,7 @@ class User(db.Model):
         return self.first_name + " " + self.last_name
 
     @classmethod
-    def signup(cls, first_name, last_name, email, password, home_location, daily_emails):
+    def signup(cls, first_name, last_name, email, password, home_location, c_or_f):
         """Sign up user.
         Hashes password and adds user to system.
         """
@@ -44,19 +44,11 @@ class User(db.Model):
                 email=email,
                 password=hashed_pwd,
                 home_location=home_location,
-                daily_emails=daily_emails
+                c_or_f=c_or_f
         )
 
         db.session.add(user)
-        print(user.full_name(), user.email)
         return user
-
-    @classmethod
-    def add_home_location(cls, user_id, home_location):
-
-        home = Location(user_id=user_id, location=home_location)
-        db.session.add(home)
-        return home
 
     @classmethod
     def authenticate(cls, email, password):
