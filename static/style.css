@@ -16,7 +16,9 @@ body{
     font-weight: bold;
     color: rgb(71, 100, 130);
     text-decoration: none !important;
-    padding: 0 8px 0 4px;
+    padding: 0 8px 0 8px;
+    font-family: 'Open Sans', sans-serif;
+    word-spacing: 1px;
 }
 .nav.navbar-nav.navbar-right li:hover a:hover {
     color: rgb(129, 162, 196);
@@ -32,6 +34,7 @@ body{
 }
 .navbar-right{
     margin: auto 0px 0px auto;
+    padding-right: 10px;
     justify-content: end;
     align-items: flex-end;
 }
