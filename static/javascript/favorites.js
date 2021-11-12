@@ -15,6 +15,7 @@ $("#weather-card").on("click", ".remove-fav", async function (evt){
     const weatherCardID = weatherCard.attr("data-location-id")
     removeFav(weatherCard, weatherCardID)
     target.remove()
+    window.location.reload()
 })
 
 // Remove favorite location from search page
