@@ -230,7 +230,7 @@ a{
 
 /* fog */
 .bg-1135, .bg-1147{
-    background-image: url("weather-imgs/fog.jpg");
+    background-image: url("weather-imgs/fog.jpeg");
     background-repeat: none;
     background-size: cover;
 }
