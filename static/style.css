@@ -143,20 +143,6 @@ footer{
 }
 
 
-
-
-
-
-/* Weather background codes */
-
-/* overcast */
-.bg-1009{
-    background-image: url("weather-imgs/overcast.jpg");
-    background-repeat: none;
-    background-size: cover;
-}
-
-
 /* SCROLL BAR */
 /* width */
 ::-webkit-scrollbar {
@@ -203,4 +189,117 @@ a{
 }
 .btn-block:hover{
     background-color: rgb(129, 162, 196) !important;
+}
+
+
+/* Weather background codes */
+
+/* sunny */
+.bg-1000{
+    background-image: url("weather-imgs/sunny.jpg");
+    background-repeat: none;
+    background-size: cover;
+}
+/* partly cloudy */
+.bg-1003{
+    background-image: url("weather-imgs/partlycloudy.jpg");
+    background-repeat: none;
+    background-size: cover;
+}
+/* cloudy */
+.bg-1006{
+    background-image: url("weather-imgs/cloudy.png");
+    background-repeat: none;
+    background-size: cover;
+}
+/* overcast */
+.bg-1009{
+    background-image: url("weather-imgs/overcast.jpg");
+    background-repeat: none;
+    background-size: cover;
+}
+/* mist */
+.bg-1030{
+    background-image: url("weather-imgs/mist.jpeg");
+    background-repeat: none;
+    background-size: cover;
+}
+
+/* fog */
+.bg-1135, .bg-1147{
+    background-image: url("weather-imgs/fog.jpg");
+    background-repeat: none;
+    background-size: cover;
+}
+
+/* drizzle */
+.bg-1150, .bg-1153{
+    background-image: url("weather-imgs/drizzle.png");
+    background-repeat: none;
+    background-size: cover;
+}
+
+/* light rain */
+.bg-1183, .bg-1063, .bg-1180, .bg-1240, .bg-1273{
+    background-image: url("weather-imgs/lightrain.png");
+    background-repeat: none;
+    background-size: cover;
+}
+/* heavy rain */
+.bg-1195, .bg-1192, .bg-1186, .bg-1189, .bg-1243{
+    background-image: url("weather-imgs/heavyrain.png");
+    background-repeat: none;
+    background-size: cover;
+}
+
+/* lightsnow */
+.bg-1213, .bg-1255, .bg-1210, .bg-1066{
+    background-image: url("weather-imgs/lightsnow.png");
+    background-repeat: none;
+    background-size: cover;
+}
+/* light snow with thunder */
+.bg-1279{
+    background-image: url("weather-imgs/lightsnowthunder.png");
+    background-repeat: none;
+    background-size: cover;
+}
+
+/* heavy snow */
+.bg-1225, .bg-1222, .bg-1258, .bg-1282, .bg-1219, .bg-1216{
+    background-image: url("weather-imgs/heavysnow.png");
+    background-repeat: none;
+    background-size: cover;
+}
+
+/* blizzard */
+.bg-1117, .bg-1114{
+    background-image: url("weather-imgs/blizzard.png");
+    background-repeat: none;
+    background-size: cover;
+}
+
+/* light sleet/freezing rain */
+.bg-1204, .bg-1069, .bg-1249, .bg-1198, .bg-1168, .bg-1072{
+    background-image: url("weather-imgs/lightsleet.png");
+    background-repeat: none;
+    background-size: cover;
+}
+/* heavy sleet/freezing rain */
+.bg-1207, .bg-1201, .bg-1252, .bg-1171{
+    background-image: url("weather-imgs/heavysleet.png");
+    background-repeat: none;
+    background-size: cover;
+}
+/* torrential rain */
+.bg-1246, .bg-1087, .bg-1276{
+    background-image: url("weather-imgs/torrentialrain.png");
+    background-repeat: none;
+    background-size: cover;
+}
+/* ice pellets */
+.bg-1237, .bg-1261, .bg-1264{
+    background-image: url("weather-imgs/icepellets.png");
+    background-repeat: none;
+    background-size: cover;
 }
