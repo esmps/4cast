@@ -27,8 +27,8 @@
                 <i>{{ response.current.condition.text }}</i>
             </div>
             <div class="col-4 text-end">
-                <p class="curr-temp">{%if g.user.c_or_f == "C" %}{{response.current.temp_c}}{% else %}{{response.current.temp_f}}{% endif %}˚{% if g.user.c_or_f == "C" %}C {% else %}F {% endif %}</p>
-                <small>H: {%if g.user.c_or_f == "C" %}{{response.forecast.forecastday[0].day.maxtemp_c}}{% else %}{{response.forecast.forecastday[0].day.maxtemp_f}}{% endif %}˚ | L: {%if g.user.c_or_f == "C" %}{{response.forecast.forecastday[0].day.mintemp_c}}{% else %}{{response.forecast.forecastday[0].day.mintemp_f}}{% endif %}˚</small>
+                <p class="curr-temp">{%if g.user.c_or_f == "c" %}{{response.current.temp_c}}{% else %}{{response.current.temp_f}}{% endif %}˚{% if g.user.c_or_f == "c" %}C {% else %}F {% endif %}</p>
+                <small>H: {%if g.user.c_or_f == "c" %}{{response.forecast.forecastday[0].day.maxtemp_c}}{% else %}{{response.forecast.forecastday[0].day.maxtemp_f}}{% endif %}˚ | L: {%if g.user.c_or_f == "c" %}{{response.forecast.forecastday[0].day.mintemp_c}}{% else %}{{response.forecast.forecastday[0].day.mintemp_f}}{% endif %}˚</small>
             </div>
         </div>
       </div>
@@ -47,7 +47,7 @@
             <div id="weather-details">
             <table class="weather-details-box text-center" id="daily-info">
                 <tr >     
-                  <td><b>Feels Like:</b> {% if g.user.c_or_f == "C" %} {{daily_info.feelslike_c}}{% else %} {{daily_info.feelslike_f}}{% endif %}˚</td>
+                  <td><b>Feels Like:</b> {% if g.user.c_or_f == "c" %} {{daily_info.feelslike_c}}{% else %} {{daily_info.feelslike_f}}{% endif %}˚</td>
                   <td><b>Humidity:</b> {{daily_info.humidity}}%</td>   
                 </tr>
                 <tr>
