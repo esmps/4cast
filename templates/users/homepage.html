@@ -27,7 +27,7 @@
     {% for location in location_data %}
     <li class="card accordian-item" data-location-id="{{location.id}}">
       <div class="card-header accordion-header container bg-{{location.res.current.condition.code}}">
-        <div class="row justify-content-between" data-bs-toggle="collapse" data-bs-target="#collapse-{{location.name}}" aria-expanded="false" aria-controls="collapse-{{location.name}}" style="cursor: pointer;">
+        <div class="row justify-content-between" data-bs-toggle="collapse" data-bs-target="#collapse-{{location.id}}" aria-expanded="false" aria-controls="collapse-{{location.name}}" style="cursor: pointer;">
           <div class="col">
             <p class="loc-name-title">{{ location.res.location.name }}, {{ location.res.location.region }}</p>
             <i>{{ location.res.current.condition.text }}</i>
@@ -41,7 +41,7 @@
         </div>
       </div>
 
-      <div id="collapse-{{location.name}}" class="collapse show" data-bs-parent="#accordion">
+      <div id="collapse-{{location.id}}" class="collapse" data-bs-parent="#accordion">
         <div class="card-body accordion-body container temp-info">
           <div class="row text-center" id="hourly-weather">
               {% for hour in location.hour_data %}
