@@ -303,8 +303,8 @@ def get_weather():
                 locations.append(location.location)
             return render_template('location.html', response=response.json(), locations=locations, hour_data=hour_data, four_day_data=four_day_data, daily_info=daily_info)
         else:
-            hour_data = json.loads(get_hourly_data(response.text, "F"))
-            four_day_data = json.loads(get_four_day_forecast(response.text, "F"))
+            hour_data = json.loads(get_hourly_data(response.text, "f"))
+            four_day_data = json.loads(get_four_day_forecast(response.text, "f"))
             daily_info = json.loads(get_daily_info(response.text))
             return render_template('location.html', response=response.json(), hour_data=hour_data, four_day_data=four_day_data, daily_info=daily_info)
 
@@ -357,6 +357,7 @@ def newsfeed(page_id):
         q='climate, climate change, global warming, weather, natural disaster',
         language='en',
         sort_by='publishedAt',
+        page=page_id
         )
     articles = news["articles"]
     return render_template('other/newsfeed.html', articles=articles, page_id=page_id)
