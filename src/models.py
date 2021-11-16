@@ -17,7 +17,7 @@ class User(db.Model):
 
     last_name = db.Column(db.Text, nullable=False)
 
-    email = db.Column(db.Text, nullable=False, unique=True)
+    username = db.Column(db.Text, nullable=False, unique=True)
 
     password = db.Column(db.Text, nullable=False)
 
@@ -31,7 +31,7 @@ class User(db.Model):
         return self.first_name + " " + self.last_name
 
     @classmethod
-    def signup(cls, first_name, last_name, email, password, home_location, c_or_f):
+    def signup(cls, first_name, last_name, username, password, home_location, c_or_f):
         """Sign up user.
         Hashes password and adds user to system.
         """
@@ -41,7 +41,7 @@ class User(db.Model):
         user = User(
                 first_name=first_name,
                 last_name=last_name,
-                email=email,
+                username=username,
                 password=hashed_pwd,
                 home_location=home_location,
                 c_or_f=c_or_f
@@ -51,7 +51,7 @@ class User(db.Model):
         return user
 
     @classmethod
-    def authenticate(cls, email, password):
+    def authenticate(cls, username, password):
         """Find user with `username` and `password`.
         This is a class method (call it on the class, not an individual user.)
         It searches for a user whose password hash matches this password
@@ -59,7 +59,7 @@ class User(db.Model):
         If can't find matching user (or if password is wrong), returns False.
         """
 
-        user = cls.query.filter_by(email=email).first()
+        user = cls.query.filter_by(username=username).first()
 
         if user:
             is_auth = bcrypt.check_password_hash(user.password, password)
