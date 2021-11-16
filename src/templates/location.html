@@ -18,7 +18,7 @@
 
 <!-- ACCORDIAN STYLE -->
 <div id="accordion" class="container noselect">
-  <ul id="weather-card" style="padding-left: 0px;">
+  <ul  style="padding-left: 0px;">
     <li class="card" id="search-weather-card" data-location-id="{% for location in locations %}{% if response.location.name in location.location %}{{location.id}}{% endif %}{% endfor %}" data-location-name="{{response.location.name}}, {{response.location.region}}">
       <div class="card-header container bg-{{response.current.condition.code}}">
         <div class="row justify-content-between" data-bs-toggle="collapse" href="#collapseOne" style="cursor: pointer;">
@@ -77,7 +77,7 @@
           {% if g.user %}
             <div class="d-flex flex-row justify-content-end" style="margin: 0px">
               
-              {% if (response.location.name + ', ' + response.location.region) in locations %}
+              {% if (response.location.name + ', ' + response.location.region) in location_names %}
                 <a class="btn btn-block mx-2 remove-fav">Remove From Favorites</a>
               {% else %}
                 <a class="btn btn-block mx-2 add-fav">Add to Favorites</a>

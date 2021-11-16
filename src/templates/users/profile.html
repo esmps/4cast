@@ -8,7 +8,7 @@
         <h1>Profile</h1>
         <hr>
         <h3>{{user.full_name()}}</h3>
-        <p><b>Email: </b>{{user.email}}</p>
+        <p><b>Username: </b>{{user.username}}</p>
         <p><b>Home Location: </b>{{user.home_location}}</p>
         <p><b>Temperature Preferences:</b> ˚{{user.c_or_f.upper()}}</p>
         <a href="{{ url_for('edit_profile')}}" class="btn btn-block">Edit Profile</a>
