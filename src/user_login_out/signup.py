@@ -9,7 +9,7 @@ from user_login_out.helper import do_login, fav_home_location
 
 WEATHER_BASE_URL = os.environ.get('WEATHER_BASE_URL')
 FORECAST_WEATHER = 'forecast.json'
-WEATHER_API_KEY = os.os.environ.get('WEATHER_API_KEY')
+WEATHER_API_KEY = os.environ.get('WEATHER_API_KEY')
 
 def extendApp_signup(app):
 
