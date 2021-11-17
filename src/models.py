@@ -21,7 +21,7 @@ class User(db.Model):
 
     password = db.Column(db.Text, nullable=False)
 
-    home_location = db.Column(db.Text, nullable=True)
+    home_location = db.Column(db.Text, nullable=False)
 
     c_or_f = db.Column(db.String(1), nullable=False, default="F")
 
