@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000" 
+const BASE_URL = "https://capstone-4cast.herokuapp.com/" 
 
 async function removeFav(target, id){
     await axios.post(`${BASE_URL}/unfavorite/${id}`)
