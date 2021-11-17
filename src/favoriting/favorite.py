@@ -13,7 +13,6 @@ def extendApp_favorite(app):
 
         if g.user:
             user = User.query.get_or_404(g.user.id)
-            print(user)
             locations = user.locations
             for location in locations:
                 if new_location==location.location:
