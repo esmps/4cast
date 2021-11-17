@@ -1,7 +1,7 @@
 """Seed database with sample data"""
 
-from app import app
-from models import db, User, Location
+from app import db
+from models import User, Location
 
 
 db.drop_all()
