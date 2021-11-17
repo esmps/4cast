@@ -1,18 +1,14 @@
 # Edit profile
 
 import os, requests, json
-from dotenv import load_dotenv, find_dotenv
 from flask import g, render_template, redirect, flash
 
 from forms import EditProfileForm
 from models import db, Location, User
 
-
-load_dotenv(find_dotenv())
-
-WEATHER_BASE_URL = 'http://api.weatherapi.com/v1/'
+WEATHER_BASE_URL = os.environ.get('WEATHER_BASE_URL')
 FORECAST_WEATHER = 'forecast.json'
-WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
+WEATHER_API_KEY = os.environ.get('WEATHER_API_KEY')
 
 def extendApp_edit_profile(app):
 

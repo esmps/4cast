@@ -2,16 +2,14 @@
 
 import os, requests, json
 from flask import g, render_template
-from dotenv import load_dotenv, find_dotenv
 
 from models import User
 from .helpers import get_daily_info, get_hourly_data, get_four_day_forecast
 
-load_dotenv(find_dotenv())
 
-WEATHER_BASE_URL = 'http://api.weatherapi.com/v1/'
+WEATHER_BASE_URL = os.environ.get('WEATHER_BASE_URL')
 FORECAST_WEATHER = 'forecast.json'
-WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
+WEATHER_API_KEY = os.environ.get('WEATHER_API_KEY')
 
 def extendApp_homepage(app):
     @app.route('/')

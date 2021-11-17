@@ -2,17 +2,14 @@
 
 import os, requests, json
 from sqlalchemy.exc import IntegrityError
-from dotenv import load_dotenv, find_dotenv
 from forms import UserAddForm
 from flask import render_template, redirect, flash
 from models import db, User
 from user_login_out.helper import do_login, fav_home_location
 
-load_dotenv(find_dotenv())
-
-WEATHER_BASE_URL = 'http://api.weatherapi.com/v1/'
+WEATHER_BASE_URL = os.environ.get('WEATHER_BASE_URL')
 FORECAST_WEATHER = 'forecast.json'
-WEATHER_API_KEY = os.getenv('WEATHER_API_KEY')
+WEATHER_API_KEY = os.os.environ.get('WEATHER_API_KEY')
 
 def extendApp_signup(app):
 
