@@ -74,12 +74,7 @@ class UserModelTestCase(TestCase):
         location2 = Location(user_id=self.u2.id, location="San Diego, CA")
         location3 = Location(user_id=self.u2.id, location="Oakland, CA")
 
-        db.session.add_all([location1, location2])
-        db.session.commit()
-
-        self.u1.locations.append(location1)
-        self.u2.locations.append(location2)
-        self.u2.locations.append(location3)
+        db.session.add_all([location1, location2, location3])
         db.session.commit()
 
         self.assertEqual(len(self.u1.locations), 1)
