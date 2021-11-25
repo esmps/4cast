@@ -6,6 +6,7 @@ from flask import g, render_template, redirect, flash
 from forms import EditProfileForm
 from models import db, Location, User
 from dotenv import load_dotenv, find_dotenv
+from user_login_out.helper import fav_home_location
 
 load_dotenv(find_dotenv())
 
