@@ -6,9 +6,12 @@ from forms import UserAddForm
 from flask import render_template, redirect, flash
 from models import db, User
 from user_login_out.helper import do_login, fav_home_location
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
 
 WEATHER_BASE_URL = os.environ.get('WEATHER_BASE_URL')
-FORECAST_WEATHER = 'forecast.json'
+FORECAST_WEATHER = '/forecast.json'
 WEATHER_API_KEY = os.environ.get('WEATHER_API_KEY')
 
 def extendApp_signup(app):
