@@ -30,10 +30,9 @@ connect_db(app)
 
 def verify_user_logged_in(function):
     """ Custom decorated to verify if user is logged in """
-
     @wraps(function)
     def wrapper(*args, **kwargs):
-        if not g.user:
+        if g.user is None:
             flash("Access unauthorized.", "danger")
             return redirect("/")
         return function(*args, **kwargs)
@@ -44,6 +43,12 @@ def page_not_found(e):
     """ Custom 404 page """
 
     return render_template('other/404.html'), 404
+
+@app.errorhandler(405)
+def method_not_allowed(e):
+    """ Send 404 page """
+
+    return render_template('other/404.html'), 405
 
 @app.before_request
 def add_user_to_g():
