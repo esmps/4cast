@@ -3,6 +3,9 @@
 import os
 from newsapi import NewsApiClient
 from flask import render_template
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
 
 NEWS_API_KEY = os.environ.get('NEWS_API_KEY')
 
