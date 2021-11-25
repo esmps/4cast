@@ -6,8 +6,8 @@ def extendApp_unfavorite(app):
     from models import db, User, Location
     from flask import g, render_template, redirect
 
-    @verify_user_logged_in
     @app.route('/unfavorite/<int:location_id>', methods=['POST'])
+    @verify_user_logged_in
     def unfavorite_location(location_id):
         """ Remove location from favorites"""
 

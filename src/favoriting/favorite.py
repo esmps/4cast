@@ -6,8 +6,8 @@ def extendApp_favorite(app):
     from flask import g, render_template, redirect
     from models import db, User, Location
 
-    @verify_user_logged_in
     @app.route('/favorite/<new_location>', methods=['POST'])
+    @verify_user_logged_in
     def favorite_location(new_location):
         """ Add location from favorites"""
 
