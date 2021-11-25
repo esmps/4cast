@@ -5,17 +5,20 @@ from flask import g, render_template, redirect, flash
 
 from forms import EditProfileForm
 from models import db, Location, User
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
 
 WEATHER_BASE_URL = os.environ.get('WEATHER_BASE_URL')
-FORECAST_WEATHER = 'forecast.json'
+FORECAST_WEATHER = '/forecast.json'
 WEATHER_API_KEY = os.environ.get('WEATHER_API_KEY')
 
 def extendApp_edit_profile(app):
 
     from app import verify_user_logged_in
 
-    @verify_user_logged_in
     @app.route('/profile/edit', methods=["GET", "POST"])
+    @verify_user_logged_in
     def edit_profile():
         """Update profile for current user."""
         
@@ -35,11 +38,11 @@ def extendApp_edit_profile(app):
                 user.first_name = form.first_name.data or user.first_name
                 user.last_name = form.last_name.data or user.last_name
                 user.username = form.username.data or user.username
+                user.c_or_f = form.c_or_f.data or user.c_or_f
                 if form.home_location.data:
                     user.home_location = f'{response.json()["location"]["name"]}, {response.json()["location"]["region"]}'
                 else:
                     user.home_location = user.home_location
-                user.c_or_f = form.c_or_f.data or user.c_or_f
                 db.session.add(user)
                 db.session.commit()
 

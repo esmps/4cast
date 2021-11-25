@@ -1,13 +1,12 @@
 # View profile
 
-from flask import g, render_template
-
 def extendApp_view_profile(app):
 
+    from flask import g, render_template
     from app import verify_user_logged_in
 
-    @verify_user_logged_in
     @app.route('/profile')
+    @verify_user_logged_in
     def view_profile():
         """ Show user profile """ 
         user = g.user
