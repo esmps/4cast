@@ -33,14 +33,15 @@ class LocationModelTestCase(TestCase):
         u1 = User.query.get(u1.id)
 
         self.u1 = u1
-
         self.client = app.test_client()
 
     def tearDown(self):
         res = super().tearDown()
         db.session.rollback()
         return res
-    
+
+########### TESTS ON LOCATION MODEL ###########
+
     def test_location_model(self):
         """ Create a new location """
         
