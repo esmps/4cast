@@ -6,7 +6,7 @@
 
   <div class="row justify-content-md-center">
     <div class="col-md-4">
-      <h2 class="join-message">Edit Your Profile.</h2>
+      <h2 class="join-message">Edit Your Profile</h2>
       <form method="POST" id="user_form">
         {{ form.hidden_tag() }}
 
@@ -18,7 +18,7 @@
           {% if field.type == "BooleanField" %}
             {{ field }} {{ field.label }}
           {% else %}
-            {{ field(placeholder=field.label.text, class="form-control") }}
+            {{ field(placeholder=field.label.text, class="form-control my-3") }}
           {% endif %}
 
         {% endfor %}
@@ -31,7 +31,7 @@
           </span>
           {% endfor %}
         {% endif %}
-        {{ form.password(placeholder="Enter your password to confirm", class="form-control") }}
+        {{ form.password(placeholder="Enter your password to confirm", class="form-control my-3") }}
 
         <div class="edit-btn-area">
           <button class="btn btn-block">Edit this user!</button>
